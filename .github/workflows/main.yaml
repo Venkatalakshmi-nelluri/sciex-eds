@@ -1,31 +1,18 @@
 name: Build
-on: [push]
-
+'on':
+  - push
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js 20
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
-    - run: npm ci
-    - run: npm run lint
-    - name: Set up environment variables
-      env:
-        AUTHOR_ENV: ${{ secrets.DEVSECRET }}
-    
-      run: |
-        echo "Setting up environment variables"
-        echo "AUTHOR_ENV=$AUTHOR_ENV"
-    - name: Update fstab.xml with environment variables
-      run: |
-        sed -i "s|\${AUTHOR_ENV}|$AUTHOR_ENV|g" fstab.xml
-        cat fstab.xml  # Just to verify the content
-        
-    - name: Deploy to Edge Delivery
-      run: |
-        # Your deployment commands go here
-        echo "Deploying to Edge Delivery with updated fstab.xml"
-
+      - uses: actions/checkout@v4
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          run: |
+            echo "ENV_URL=${{ secrets.STAGESECRET }}" >> $GITHUB_ENV
+            sed -i "s|\${ENV_URL}|${{ secrets.STAGESECRET }}|g" fstab.xml
+            cat fstab.xml
+            npm ci
+      - run: npm run lint

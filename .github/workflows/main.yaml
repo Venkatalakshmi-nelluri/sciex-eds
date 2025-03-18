@@ -14,10 +14,10 @@ jobs:
           node-version: 20
       - name: Set up environment variable for Stage Secret
         run: |
-          echo "ENV_URL=${{ secrets.STAGESECRET }}" >> $GITHUB_ENV
+          echo "ENV_URL=${{ secrets.DEVURL }}" >> $GITHUB_ENV
       - name: Update fstab.xml with ENV_URL
         run: |
-          sed -i "s|\${ENV_URL}|${{ secrets.STAGESECRET }}|g" fstab.xml
+          sed -i "s|\${ENV_URL}|${{ secrets.DEVURL }}|g" fstab.xml
           cat fstab.xml  # To ensure the change was made
       - name: Install dependencies
         run: npm ci

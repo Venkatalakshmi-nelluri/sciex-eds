@@ -1,6 +1,8 @@
 name: Build
+
 'on':
   - push
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -10,9 +12,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          run: |
-            echo "ENV_URL=${{ secrets.STAGESECRET }}" >> $GITHUB_ENV
-            sed -i "s|\${ENV_URL}|${{ secrets.STAGESECRET }}|g" fstab.xml
-            cat fstab.xml
-            npm ci
-      - run: npm run lint
+      - name: Set up environment variable for Stage Secret
+        run: |
+          echo "ENV_URL=${{ secrets.STAGESECRET }}" >> $GITHUB_ENV
+      - name: Update fstab.xml with ENV_URL
+        run: |
+          sed -i "s|\${ENV_URL}|${{ secrets.STAGESECRET }}|g" fstab.xml
+          cat fstab.xml  # To ensure the change was made
+      - name: Install dependencies
+        run: npm ci
+      - name: Run lint
+        run: npm run lint
+      - name: Build application
+        run: npm run build  # Make sure you have a build script in package.json
